@@ -1,54 +1,64 @@
-(ns cartao-credito-nubank.core)
+(ns cartao-credito-nubank.core
+  (:require [cartao-credito-nubank.db]))
 
-(def clientes { :1 {:nome "Mateus"
-                    :cpf "111.111.111-11"
-                    :email "mateus.pena@nubank.com.br"
-                    :cartao { :numero "5272 9041 9812 7063"
-                              :cvv "342"
-                              :validade "27/12/2021"
-                              :limite 1000.0
-                              :compras [{:data "27/02/2021", :valor 58.7, :estabelecimento "Mercado", :categoria "Alimentação"}
-                                        {:data "27/02/2021", :valor 11.7, :estabelecimento "Ubereats", :categoria "Alimentação"}
-                                        {:data "27/02/2021", :valor 21.7, :estabelecimento "Udemy", :categoria "Educação"}
-                                        {:data "27/03/2021", :valor 80.0, :estabelecimento "Dentista", :categoria "Saúde"}] } }
-               :2 {:nome "Jéssica"
-                   :cpf "111.111.111-11"
-                   :email "jessica.lameri@nubank.com.br"
-                   :cartao { :numero "5272 9041 9812 7063"
-                            :cvv "342"
-                            :validade "27/12/2021"
-                            :limite 1500.0
-                            :compras [{:data "27/02/2021", :valor 18.7, :estabelecimento "Mercado", :categoria "Alimentação"}
-                                      {:data "27/02/2021", :valor 210.7, :estabelecimento "Faculdade", :categoria "Educação"}
-                                      {:data "27/02/2021", :valor 91.7, :estabelecimento "Alura", :categoria "Educação"}
-                                      {:data "27/03/2021", :valor 32.7, :estabelecimento "Clinica", :categoria "Saúde"}] } }})
+(def todos-os-clientes cartao-credito-nubank.db/todos-os-clientes)
 
-;(defn total-por-categoria
-;  [cliente-id]
-;  )
-
-;(println (get-in clientes [ :1 :nome ]))
-
-(def aux { "Alimentaçã" 0 })
-
-(if (not (nil? (get aux "Alimentação")))
-  (do (def aux (update aux "Alimentação" #(+ %1 5))))
-  (do (def aux (assoc aux "Alimentação" 5))))
-
-(println aux)
-
-;(println (update aux "Alimentação" #(+ %1 5)))
-
-;(defn agrupa-categorias
-;    [compra]
-;    (-> aux
-;        (-> compra :categoria)
-;        (update-in aux (-> compra :categoria))
-;        ))
 ;
-;(->> clientes
-;    :1
-;    :cartao
-;    :compras
-;    (map agrupa-categorias)
-;    println)
+; Listagem de compras realizadas (data, valor, estabelecimento, categoria);
+;
+(defn listar-compras-cartao [cartao]
+  (->> cartao
+       :compras))
+
+(defn compras-cartao-cliente
+  [cliente]
+  {:cliente-nome    (:nome cliente)
+   :cliente-compras (listar-compras-cartao (:cartao cliente)) })
+
+(->> (todos-os-clientes)
+  (map compras-cartao-cliente)
+  println)
+
+;
+; Valor dos gastos agrupados por categoria;
+;
+(defn calcula-gastos-categorias
+  [ [categoria, compras] ]
+  { :categoria categoria
+    :total (reduce (fn [valor, compra] (+ (:valor compra) valor)) 0 compras) })
+
+(defn gastos-agrupados-por-categoria
+  [compras]
+  (->> compras
+       (group-by :categoria)
+       (map calcula-gastos-categorias)))
+
+(defn gastos-agrupados-do-cliente
+  [cliente]
+  {:cliente-nome (:cliente-nome cliente)
+   :gastos-agrupados-categoria (gastos-agrupados-por-categoria (:cliente-compras cliente))
+   })
+
+(defn agrupar-gastos-por-cliente
+  [clientes]
+  (->> clientes
+       (map compras-cartao-cliente)
+       (map gastos-agrupados-do-cliente)))
+
+(println (agrupar-gastos-por-cliente (todos-os-clientes)))
+
+
+
+;(defn listagem-compras
+;  [cliente]
+;  (get-in cliente [:cartao :compras]))
+;
+;(println (->> (todos-os-clientes)
+;              ;(map :nome)
+;              (map listagem-compras)
+;              println
+;              ))
+
+
+
+

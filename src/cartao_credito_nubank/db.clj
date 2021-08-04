@@ -13,8 +13,8 @@
                                  {:data (date/date-parse "2021-07-17"), :valor 30.0, :estabelecimento "Ubereats", :categoria "Alimentação"}
                                  {:data (date/date-parse "2021-07-23"), :valor 80.0, :estabelecimento "Ubereats", :categoria "Alimentação"}
                                  {:data (date/date-parse "2021-07-05"), :valor 21.7, :estabelecimento "Udemy", :categoria "Educação"}
-                                 {:data (date/date-parse "2021-07-05"), :valor 120.0, :estabelecimento "Oftalmologista", :categoria "Saúde"}
-                                 {:data (date/date-parse "2021-07-18"), :valor 80.0, :estabelecimento "Dentista", :categoria "Saúde"}]}})
+                                 {:data (date/date-parse "2021-08-05"), :valor 120.0, :estabelecimento "Oftalmologista", :categoria "Saúde"}
+                                 {:data (date/date-parse "2021-08-18"), :valor 80.0, :estabelecimento "Dentista", :categoria "Saúde"}]}})
 
 (def jessica {:nome   "Jéssica"
               :cpf    "111.111.111-11"

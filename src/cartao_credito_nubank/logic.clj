@@ -1,5 +1,7 @@
 (ns cartao-credito-nubank.logic
-  (:require [cartao-credito-nubank.db :as db])
+  (:use clojure.pprint)
+  (:require [schema.core :as s])
+  (:require [cartao-credito-nubank.model :as model])
   (:require [cartao-credito-nubank.date :as date]))
 
 ;
@@ -18,11 +20,11 @@
   {:cliente-nome    (:nome cliente)
    :cliente-compras (listar-compras-cartao (:cartao cliente)) })
 
-(defn exibe-compras-do-cliente
-  [cliente]
+(s/defn exibe-compras-do-cliente
+  [cliente :- model/Cliente]
   (let [cliente-compras (compras-cartao-cliente cliente)]
     (println "\nCompras do cartão de crédito de" (:cliente-nome cliente-compras))
-    (mapv println (mapv extrai-compra-cartao (:cliente-compras cliente-compras)))))
+    (pprint (mapv extrai-compra-cartao (:cliente-compras cliente-compras))) ))
 
 ;
 ; Valor dos gastos agrupados por categoria;
@@ -44,13 +46,13 @@
    :gastos-agrupados-categoria (gastos-agrupados-por-categoria (:cliente-compras cliente))
    })
 
-(defn exibe-gastos-agrupados-do-cliente
-  [cliente]
+(s/defn exibe-gastos-agrupados-do-cliente
+  [cliente :- model/Cliente]
   (let [gastos-agrupados (->> cliente
                             compras-cartao-cliente
                             gastos-agrupados-do-cliente)]
     (println "\nGastos por categoria de" (:cliente-nome gastos-agrupados))
-    (mapv println (:gastos-agrupados-categoria gastos-agrupados))))
+    (pprint (:gastos-agrupados-categoria gastos-agrupados))))
 
 ;
 ; Cálculo do valor da fatura do mês (opcional);
@@ -81,10 +83,10 @@
        (map :valor)
        (reduce + 0)))
 
-(defn exibe-fatura-mes-atual
-  [cliente]
+(s/defn exibe-fatura-mes-atual
+  [cliente :- model/Cliente]
   (println "\nFatura do mes atual de" (:nome cliente))
-  (println (monta-fatura-mes-atual (calcula-fatura-mes-atual cliente))))
+  (pprint (monta-fatura-mes-atual (calcula-fatura-mes-atual cliente))))
 
 ;
 ; Busca de compras pelo valor ou estabelecimento (opcional).
@@ -98,8 +100,8 @@
                                 (= termo (:valor compra)))))
        (map (fn [compra] (update compra :data #(date/date-format %1) )))))
 
-(defn exibe-busca-de-compras
-  [cliente termo]
+(s/defn exibe-busca-de-compras
+  [cliente :- model/Cliente, termo :- s/Str]
   (println "\nCompras de" (:nome cliente))
-  (map println (busca-compra cliente termo)))
+  (pprint (busca-compra cliente termo)))
 

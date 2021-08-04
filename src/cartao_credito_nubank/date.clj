@@ -11,3 +11,6 @@
    (date-format local-date "dd/MM/YYYY"))
   ([local-date format]
    (java-time/format (java-time/formatter format) local-date)))
+
+(-> (date-now)
+    println)

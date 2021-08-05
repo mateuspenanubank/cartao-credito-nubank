@@ -34,25 +34,22 @@
   { :categoria categoria
    :total (reduce (fn [valor, compra] (+ (:valor compra) valor)) 0 compras) })
 
-(defn gastos-agrupados-por-categoria
-  [compras]
+(s/defn gastos-agrupados-por-categoria
+  [compras :- model/Compras]
   (->> compras
        (group-by :categoria)
        (map calcula-gastos-categorias)))
 
-(defn gastos-agrupados-do-cliente
-  [cliente]
-  {:cliente-nome (:cliente-nome cliente)
-   :gastos-agrupados-categoria (gastos-agrupados-por-categoria (:cliente-compras cliente))
-   })
+(s/defn gastos-agrupados-do-cliente
+  [cliente :- model/Cliente]
+  (let [cliente-compras (compras-cartao-cliente cliente)]
+    (gastos-agrupados-por-categoria (:cliente-compras cliente-compras)) ))
 
 (s/defn exibe-gastos-agrupados-do-cliente
   [cliente :- model/Cliente]
-  (let [gastos-agrupados (->> cliente
-                            compras-cartao-cliente
-                            gastos-agrupados-do-cliente)]
-    (println "\nGastos por categoria de" (:cliente-nome gastos-agrupados))
-    (pprint (:gastos-agrupados-categoria gastos-agrupados))))
+  (let [gastos-agrupados (gastos-agrupados-do-cliente cliente)]
+    (println "\nGastos por categoria de" (:nome cliente))
+    (pprint gastos-agrupados) ) )
 
 ;
 ; Cálculo do valor da fatura do mês (opcional);

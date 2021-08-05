@@ -9,8 +9,8 @@
 ;(-> db/mateus
 ;    logic/exibe-compras-do-cliente)
 ;
-;(-> db/mateus
-;    logic/exibe-gastos-agrupados-do-cliente)
+(-> db/mateus
+    logic/exibe-gastos-agrupados-do-cliente)
 ;
 ;(-> db/mateus
 ;    logic/exibe-fatura-mes-atual)
@@ -21,8 +21,8 @@
 ;(-> db/mateus
 ;    (logic/exibe-busca-de-compras 80.0))
 
-(println (logic/adiciona-nova-compra-cliente db/jessica
-                                             {:data (date/date-parse "2021-08-18"),
-                                              :valor 800.0,
-                                              :estabelecimento "Dentista",
-                                              :categoria "Saúde"} ) )
+;(println (logic/adiciona-nova-compra-cliente db/jessica
+;                                             {:data (date/date-parse "2021-08-18"),
+;                                              :valor 800.0,
+;                                              :estabelecimento "Dentista",
+;                                              :categoria "Saúde"} ) )

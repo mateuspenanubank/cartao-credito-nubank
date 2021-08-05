@@ -39,28 +39,11 @@
 ;
 (deftest test-gastos-agrupados-por-categoria
   (testing "Testar listagem de gastos agrupados por categoria."
-    (let [gastos-por-categoria-mateus [{:categoria "Alimentação", :total 180.4},
+    (let [cliente db/mateus
+          gastos-por-categoria-mateus [{:categoria "Alimentação", :total 180.4},
                                        {:categoria "Educação", :total 21.7},
-                                       {:categoria "Saúde", :total 200.0}]]
-      (is (->> db/mateus
-               compras-cartao-cliente
-               gastos-agrupados-do-cliente
-               :gastos-agrupados-categoria
-               (= gastos-por-categoria-mateus)) ) ) )
-
-  (testing "Testar listagem desordenada de gastos agrupados por categoria."
-    (let [gastos-por-categoria-mateus [{:categoria "Alimentação", :total 180.4},
-                                       {:categoria "Saúde", :total 200.0},
-                                       {:total 21.7 :categoria "Educação"}]]
-      (is
-        (->> db/mateus
-             compras-cartao-cliente
-             gastos-agrupados-do-cliente
-             :gastos-agrupados-categoria
-             (reduce (fn [vetor, agrupamento] (conj vetor (some #{agrupamento} gastos-por-categoria-mateus))) [])
-             (filter not-empty)
-             count
-             (= (count gastos-por-categoria-mateus)))) ) )
+                                       {:categoria "Saúde", :total 200.0}] ]
+      (is  (= gastos-por-categoria-mateus (gastos-agrupados-do-cliente cliente)) ) ) )
 
   (testing "Testar listagem com 1 item a menos."
     (let [gastos-por-categoria-mateus [{:categoria "Alimentação", :total 180.4},

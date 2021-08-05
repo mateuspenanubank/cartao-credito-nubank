@@ -7,6 +7,26 @@
             [cartao-credito-nubank.model :as model] ))
 
 ;
+; Teste da função que adiciona uma compra na lista de compras realizadas;
+;
+(deftest test-adiciona-nova-compra-cliente
+  (let [cliente db/jessica,
+        nova-compra-valida {:data            (date/date-parse "2021-08-18"),
+                            :valor           800.0,
+                            :estabelecimento "Dentista",
+                            :categoria       "Saúde"},
+        nova-compra-invalida {:valor           800.0,
+                              :estabelecimento "Dentista",
+                              :categoria       "Saúde"}]
+    (testing "Testar incluisão de compra válida a lista de compras do cliente."
+      (let [cliente-atualizado (adiciona-nova-compra-cliente cliente nova-compra-valida)]
+        (is (not= nil (some #{ nova-compra-valida } (get-in cliente-atualizado [:cartao :compras])))) ) )
+
+    (testing "Testar inclusão de compra inválida a lista de compras do cliente."
+      (is (try (s/validate model/Cliente (adiciona-nova-compra-cliente cliente nova-compra-invalida)) false
+               (catch clojure.lang.ExceptionInfo e (= :schema.core/error (:type (ex-data e)))) ) ) ) ) )
+
+;
 ; Teste da função que lista as compras realizadas;
 ;
 (deftest test-compras-cartao-cliente

@@ -105,3 +105,11 @@
   (println "\nCompras de" (:nome cliente))
   (pprint (busca-compra cliente termo)))
 
+
+;
+; Adicionar uma compra na lista de compras do cliente (extra).
+;
+(s/defn adiciona-nova-compra-cliente :- model/Cliente
+  [cliente :- model/Cliente, compra :- model/Compra]
+  (update-in cliente [:cartao :compras] conj compra) )
+

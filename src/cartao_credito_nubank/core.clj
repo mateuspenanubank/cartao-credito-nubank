@@ -1,16 +1,20 @@
 (ns cartao-credito-nubank.core
+  (:use clojure.pprint)
   (:require [schema.core :as s])
   (:require [cartao-credito-nubank.date :as date])
   (:require [cartao-credito-nubank.db :as db])
   (:require [cartao-credito-nubank.logic :as logic]))
 
-;(s/set-fn-validation! true)
+(pprint (db/abre-conexao))
 
+
+;(s/set-fn-validation! true)
+;
 ;(-> db/mateus
 ;    logic/exibe-compras-do-cliente)
-;
-(-> db/mateus
-    logic/exibe-gastos-agrupados-do-cliente)
+
+;(-> db/mateus
+;    logic/exibe-gastos-agrupados-do-cliente)
 ;
 ;(-> db/mateus
 ;    logic/exibe-fatura-mes-atual)

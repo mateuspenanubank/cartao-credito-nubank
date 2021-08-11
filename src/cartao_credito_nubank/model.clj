@@ -19,11 +19,3 @@
                 :cpf    s/Str,
                 :email  s/Str,
                 :cartao Cartao })
-
-
-;(s/set-fn-validation! true)
-;
-;(s/defn verifica-cliente [cliente :- Cliente]
-;  (pprint cliente))
-;
-;(verifica-cliente db/mateus)

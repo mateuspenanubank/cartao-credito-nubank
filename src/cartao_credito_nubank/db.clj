@@ -18,6 +18,9 @@
              {:db/ident       :cliente/email
               :db/valueType   :db.type/string
               :db/cardinality :db.cardinality/one}
+             {:db/ident       :cliente/cartao
+              :db/valueType   :db.type/ref
+              :db/cardinality :db.cardinality/one}
 
              ; Cartão
              {:db/ident       :cartao/id
@@ -36,6 +39,9 @@
              {:db/ident       :cartao/limite
               :db/valueType   :db.type/bigdec
               :db/cardinality :db.cardinality/one}
+             {:db/ident       :cartao/compras
+              :db/valueType   :db.type/ref
+              :db/cardinality :db.cardinality/many}
 
              ;Compra
              {:db/ident       :compra/id
@@ -43,23 +49,69 @@
               :db/cardinality :db.cardinality/one
               :db/unique      :db.unique/identity}
              {:db/ident       :compra/data
-              :db/valueType   :db.type/string
+              :db/valueType   :db.type/instant
+              :db/cardinality :db.cardinality/one}
+             {:db/ident       :compra/valor
+              :db/valueType   :db.type/bigdec
+              :db/cardinality :db.cardinality/one}
+             {:db/ident       :compra/categoria
+              :db/valueType   :db.type/ref
+              :db/cardinality :db.cardinality/one}
+             {:db/ident       :compra/estabelecimento
+              :db/valueType   :db.type/ref
+              :db/cardinality :db.cardinality/one}
+
+             ; Estabelecimento
+             {:db/ident       :estabelecimento/id
+              :db/valueType   :db.type/uuid
               :db/cardinality :db.cardinality/one
               :db/unique      :db.unique/identity}
-             ])
+             {:db/ident       :estabelecimento/nome
+              :db/valueType   :db.type/string
+              :db/cardinality :db.cardinality/one}
 
+             ; Categoria
+             {:db/ident       :categoria/id
+              :db/valueType   :db.type/uuid
+              :db/cardinality :db.cardinality/one
+              :db/unique      :db.unique/identity}
+             {:db/ident       :categoria/nome
+              :db/valueType   :db.type/string
+              :db/cardinality :db.cardinality/one}])
 
-
-
-(defn abre-conexao []
+(defn abre-conexao! []
   (d/create-database db-uri)
   (d/connect db-uri))
 
-(defn apaga-banco []
+(defn apaga-banco! []
   (d/delete-database db-uri))
 
+(defn cria-schema! [conn]
+  (d/transact conn schema))
+
+(defn captura-db-snapshot! [conn]
+  (d/db conn))
+
+(def conn (abre-conexao!))
+
+(defn insere-cliente! [cliente]
+  @(d/transact conn [cliente]) )
 
 
+(defn todas-as-compras! [db]
+  (d/q '[:find (pull ?compra [:compra/id
+                              :compra/data
+                              :compra/valor
+                              {:compra/categoria [:categoria/id
+                                                  :categoria/nome]}
+                              {:compra/estabelecimento [:estabelecimento/id
+                                                        :estabelecimento/nome]}])
+         :where [?compra :compra/categoria ?categoria]
+                [?categoria :categoria/id _] ]
+       db ) )
+
+
+(cria-schema! conn)
 
 
 ;(def mateus {:nome   "Mateus"

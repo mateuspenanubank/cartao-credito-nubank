@@ -1,14 +1,34 @@
 (ns cartao-credito-nubank.core
   (:use clojure.pprint)
   (:require [schema.core :as s])
-  (:require [cartao-credito-nubank.date :as date])
-  (:require [cartao-credito-nubank.db :as db])
-  (:require [cartao-credito-nubank.logic :as logic]))
+  (:require [cartao-credito-nubank.date :as c.date])
+  (:require [cartao-credito-nubank.db :as c.db])
+  (:require [cartao-credito-nubank.logic :as c.logic]
+            [cartao-credito-nubank.model :as c.model]
+            [datomic.api :as d]))
 
-(pprint (db/abre-conexao))
+(s/set-fn-validation! true)
+
+(let [nome "Mateus"
+      cpf "111111111111"
+      email "mateus.pena@nubank.com.br"
+      numero "4272 9041 9812 7063"
+      cvv "321"
+      validade "07/2025"
+      limite 1000M]
+  (println (c.logic/salva-cliente-com-cartao nome cpf email numero cvv validade limite)) )
 
 
-;(s/set-fn-validation! true)
+
+
+
+
+
+
+
+
+
+
 ;
 ;(-> db/mateus
 ;    logic/exibe-compras-do-cliente)

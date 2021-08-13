@@ -93,10 +93,37 @@
   (d/db conn))
 
 (def conn (abre-conexao!))
+(cria-schema! conn)
+
+
+
+
+
+
 
 (defn insere-cliente! [cliente]
   @(d/transact conn [cliente]) )
 
+(defn todas-os-clientes! []
+  (d/q '[:find (pull ?cliente [:cliente/id
+                               :cliente/nome
+                               :cliente/cpf
+                               :cliente/email
+                               {:cliente/cartao [:cartao/id
+                                                 :cartao/numero
+                                                 :cartao/cvv
+                                                 :cartao/validade
+                                                 :cartao/limite
+                                                 {:cartao/compras [:compra/id
+                                                                   :compra/valor
+                                                                   :compra/data
+                                                                   :compra/categoria
+                                                                   :compra/estabelecimento]}]}])
+         :where [?cliente :cliente/id] ]
+       (captura-db-snapshot! conn)))
+
+(defn insere-cartao! [cartao]
+  @(d/transact conn [cartao]) )
 
 (defn todas-as-compras! [db]
   (d/q '[:find (pull ?compra [:compra/id
@@ -110,8 +137,6 @@
                 [?categoria :categoria/id _] ]
        db ) )
 
-
-(cria-schema! conn)
 
 
 ;(def mateus {:nome   "Mateus"

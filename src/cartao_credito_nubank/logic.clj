@@ -4,24 +4,42 @@
   (:require [cartao-credito-nubank.db :as c.db])
   (:require [cartao-credito-nubank.models.cartao :as c.models.cartao])
   (:require [cartao-credito-nubank.models.cliente :as c.models.cliente])
-  (:require [cartao-credito-nubank.model :as c.model])
+  (:require [cartao-credito-nubank.models.categoria :as c.models.categoria])
+  (:require [cartao-credito-nubank.models.estabelecimento :as c.models.estabelecimento])
+  (:require [cartao-credito-nubank.models.compra :as c.models.compra])
   (:require [cartao-credito-nubank.date :as c.date]))
-
-
-
-(defn salva-cliente-com-cartao [nome cpf email  numero cvv validade limite]
-  (let [cartao (c.models.cartao/novo-cartao numero cvv validade limite)
-        cliente (c.models.cliente/novo-cliente nome cpf email cartao)]
-    (c.db/insere-cliente! cliente) ) )
-
-
-
 
 (defn converte-data-da-compra-para-instant [compra]
   (update-in compra [:compra/data] c.date/local-date-to-instant))
 
 (defn converte-data-da-compra-para-localdate [compra]
-  (update-in compra [:compra/data] c.date/instant-to-local-date))
+  (update-in compra [:compra/data] c.date/instant-to-local-date)
+  )
+
+
+
+(defn salva-cliente-com-cartao! [nome cpf email  numero cvv validade limite]
+  (let [cartao (c.models.cartao/novo-cartao numero cvv validade limite)
+        cliente (c.models.cliente/novo-cliente nome cpf email cartao)]
+    (c.db/insere-cliente! cliente) ) )
+
+(defn listagem-clientes! []
+  (let [clientes (c.db/todas-os-clientes!)]
+    (->> clientes
+         (reduce (fn [coll o] (conj coll (first o))) [])
+         )))
+
+(defn salva-nova-compra-cartao! [cliente data valor categoria estabelecimento]
+  (let [compra (c.models.compra/nova-compra (c.date/date-parse data)
+                                            valor
+                                            (c.models.estabelecimento/novo-estabelecimento estabelecimento)
+                                            (c.models.categoria/nova-categoria categoria))
+        cartao (:cliente/cartao cliente)
+        cartao-atualizado (update-in cartao [:cartao/compras] conj (converte-data-da-compra-para-instant compra))]
+    (c.db/insere-cartao! cartao-atualizado)
+    )
+  )
+
 
 ;(def compras
 ;  (->> todas-as-compras
